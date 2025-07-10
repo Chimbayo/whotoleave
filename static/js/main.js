@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const slider = document.getElementById('probability-slider');
     const valueSpan = document.getElementById('probability-value');
@@ -49,8 +48,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.length === 0) {
                     resultsBody.innerHTML = `
                         <tr>
-                            <td colspan="23" style="text-align:center; color: #666;">
-                                No customers found above this probability.
+                            <td colspan="23" style="text-align:center; color: #666; padding: 40px; font-style: italic;">
+                                No customers found above this probability threshold.
                             </td>
                         </tr>`;
                     return;
@@ -58,7 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 for (const customer of data) {
                     const row = document.createElement("tr");
-                    row.className = "border-b hover:bg-gray-50";
+                    const probability = parseFloat(customer.churn_probability) * 100;
+                    const isHighRisk = probability >= 50;
+                    
+                    // Add appropriate class based on risk level
+                    row.className = isHighRisk ? "high-risk-row" : "low-risk-row";
 
                     row.innerHTML = `
                         <td class="p-3">${customer.customer_id ?? ""}</td>
@@ -79,28 +82,49 @@ document.addEventListener("DOMContentLoaded", function () {
                         <td class="p-3">${mobileBankMap[customer.mobile_banking_usage] ?? customer.mobile_banking_usage}</td>
                         <td class="p-3">${customer.number_of_transactions_per_month ?? ""}</td>
                         <td class="p-3">${customer.num_of_complaints ?? ""}</td>
-                        <td class="p-3">${customer.proximity_to_nearestbranch_or_atm_km ?? ""}</td>
+                        <td class="p-3">${customer.proximity_to_nearestbranch_or_atm_km ? parseFloat(customer.proximity_to_nearestbranch_or_atm_km).toFixed(1) + ' km' : ""}</td>
                         <td class="p-3">${netQualityMap[customer.mobile_network_quality] ?? customer.mobile_network_quality}</td>
                         <td class="p-3">${phoneMap[customer.owns_mobile_phone] ?? customer.owns_mobile_phone}</td>
                         <td class="p-3">${
                             customer.prediction === 1
-                                ? '<span class="text-red-600">Will Leave</span>'
+                                ? '<span class="prediction-churn">Will Leave</span>'
                                 : customer.prediction === 0
-                                    ? '<span class="text-green-600">Will Stay</span>'
+                                    ? '<span class="prediction-stay">Will Stay</span>'
                                     : ''
                         }</td>
                         <td class="p-3">${
                             customer.churn_probability !== null && customer.churn_probability !== undefined
-                                ? (parseFloat(customer.churn_probability) * 100).toFixed(2) + "%"
+                                ? `<span class="${isHighRisk ? 'probability-high' : 'probability-low'}">${probability.toFixed(1)}%</span>`
                                 : ""
                         }</td>
                     `;
                     resultsBody.appendChild(row);
                 }
+
+                // Add zebra striping
+                addZebraStriping();
             })
             .catch(error => {
                 console.error("Error fetching customers:", error);
+                resultsBody.innerHTML = `
+                    <tr>
+                        <td colspan="23" style="text-align:center; color: #ef4444; padding: 40px;">
+                            Error loading customer data. Please try again.
+                        </td>
+                    </tr>`;
             });
+    }
+
+    // Function to add zebra striping while preserving risk colors
+    function addZebraStriping() {
+        const rows = resultsBody.querySelectorAll('tr');
+        rows.forEach((row, index) => {
+            if (index % 2 === 0) {
+                row.classList.add('zebra-even');
+            } else {
+                row.classList.add('zebra-odd');
+            }
+        });
     }
 
     // Initial load
@@ -146,8 +170,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `customers_prob_${threshold}.csv`);
+        link.setAttribute("download", `customers_high_risk_${threshold}percent.csv`);
+        link.style.display = 'none';
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
         URL.revokeObjectURL(url);
     });
 });
