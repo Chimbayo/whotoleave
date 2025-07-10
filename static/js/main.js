@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
     const slider = document.getElementById('probability-slider');
     const valueSpan = document.getElementById('probability-value');
@@ -178,7 +179,6 @@ document.addEventListener("DOMContentLoaded", function () {
         URL.revokeObjectURL(url);
     });
 });
-
 document.addEventListener("DOMContentLoaded", function () {
     const entryTypeSelect = document.getElementById("entry-type");
     const singleEntryFields = document.getElementById("single-entry-fields");
