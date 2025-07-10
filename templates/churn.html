@@ -8,96 +8,129 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
-    /* Global Styles */
-    :root {
-        --primary-color: #4a89dc;
-        --secondary-color: #e9573f;
-        --text-color: #333333;
-        --bg-light: #f8f9fa;
-        --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        --border-radius: 8px;
-    }
+/* Reset some default margins and paddings */
+body, h3, p, div, span, a {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        grid-template-rows: auto auto 1fr;
-        grid-template-columns: 300px 1fr;
-        height: 100vh;
-        background: var(--bg-light);
-        color: var(--text-color);
-    }
+/* Body styling */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 20px;
+}
 
-    /* Navigation */
-    nav {
-        grid-column: 1 / 3;
-        grid-row: 1;
-        background: white;
-        padding: 5px;
-        box-shadow: var(--box-shadow);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #e6e9ed;
-    }
+/* Navbar styling */
+nav {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    nav .text-xl {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-left: 20px;
-        align-items: center;
-    }
+nav img {
+    height: 40px;
+}
 
-    nav .space-x-4 a {
-        margin-left: 1.5rem;
-        text-decoration: none;
-        font-weight: 600;
-        color: var(--primary-color);
-        transition: all 0.3s ease;
-    }
+nav a {
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
 
-    nav .space-x-4 a:hover {
-        color: var(--primary-color);
-        text-decoration: underline;
-    }
+nav a:hover {
+    text-decoration: underline;
+}
 
-    /* Header Panel */
-    .header {
-        grid-column: 1 / 3;
-        background: white;
-        padding: 1.5rem 2rem;
-        display: flex;
-        gap: 20px;
-        border-bottom: 1px solid #e6e9ed;
-        box-shadow: var(--box-shadow);
-    }
+/* Header section holding the metrics */
+.header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
 
-    .metric-box {
-        flex: 1;
-        background: linear-gradient(135deg, #4a89dc, #357ABD);
-        color: white;
-        padding: 8px;
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        text-align: center;
-    }
+/* Metric box styling */
+.metric-box {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s;
+}
 
-    .metric-box h3 {
-        margin: 0;
-        font-size: 1.2rem;
-        color: white;
-        font-weight: 400;
-    }
+.metric-box:hover {
+    transform: translateY(-3px);
+}
 
-    .metric-box p {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: bold;
-        color: white;
-    }
+/* Headings in metric boxes */
+.metric-box h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Metric values */
+.metric-box div, .metric-box span {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4a89dc;
+}
+
+/* Metric link styling */
+.metric-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.metric-link:hover .metric-box {
+    border-color: #4a89dc;
+    box-shadow: 0 4px 10px rgba(74, 137, 220, 0.3);
+}
+
+/* Slider styling */
+.slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.slider {
+    width: 100px;
+}
+
+.probability-value {
+    font-weight: bold;
+    color: #4a89dc;
+}
+
+/* Gradient metric box override (your churn summary) */
+.metric-box[style*="linear-gradient"] {
+    color: #ffffff;
+}
+
+.metric-box[style*="linear-gradient"] h3 {
+    color: #ffffff;
+}
+
+.metric-box[style*="linear-gradient"] a {
+    color: #ffffff;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.metric-box[style*="linear-gradient"] a:hover {
+    color: #e0e0e0;
+}
 
     /* Left Panel (Form) */
     .left-panel {
@@ -627,13 +660,25 @@
     </div>
     
     <div class="right-panel">
-        <div class="table-controls">
-            <div class="flex-row">
-                <h2 id="total-count-display">Total customers with ≥ 50% probability of leaving: 0</h2>
+    <div class="table-controls">
+        <div class="flex-row">
+            <h2 id="total-count-display">Total customers with ≥ 50% probability of leaving: 0</h2>
+            <div class="controls-group">
+                <div class="risk-labels">
+                    <div class="risk-label">
+                        <span class="risk-indicator high-risk"></span>
+                        <span>High Risk (&gt;50%)</span>
+                    </div>
+                    <div class="risk-label">
+                        <span class="risk-indicator low-risk"></span>
+                        <span>Low Risk (&lt;50%)</span>
+                    </div>
+                </div>
                 <button id="export-btn">Export to CSV</button>
             </div>
         </div>
-        <table id="results-table" class="w-full border-collapse">
+    </div>
+    <table id="results-table" class="w-full border-collapse">
         <thead class="bg-gray-100">
             <tr>
                 <th class="p-3 text-left">Customer ID</th>
@@ -663,10 +708,9 @@
         </thead>
         <tbody id="results-body">
             <!-- Data will be loaded dynamically via JavaScript -->
-        </tablebody>
-        </table>
-        
-    </div>
+        </tbody>
+    </table>
+</div>
 
     <!-- Rest of your JavaScript remains unchanged -->
     <script>
