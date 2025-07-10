@@ -157,92 +157,272 @@
     background: #f9f9f9;
 }
 
+/* Table Controls Styling */
 .table-controls {
+    margin-bottom: 20px;
+}
+
+.flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.controls-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.risk-labels {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.risk-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.risk-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.high-risk {
+    background-color: #ef4444;
+}
+
+.low-risk {
+    background-color: #22c55e;
+}
+
+#total-count-display {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+#export-btn {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+#export-btn:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+#export-btn:active {
+    transform: translateY(0);
+}
+
+/* Table Styling */
+#results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#results-table thead {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+#results-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #d1d5db;
+    font-size: 14px;
     position: sticky;
     top: 0;
-    background: #fff;
     z-index: 10;
-    padding: 0px;
-    border-bottom: 1px solid #ddd;
 }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: var(--border-radius);
-        overflow: hidden;
-        box-shadow: var(--box-shadow);
-    }
 
-    th, td {
-        padding: 12px 15px;
-        text-align: left;
-    }
+#results-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    color: #374151;
+}
 
-    th {
-        background: var(--primary-color);
-        color: white;
-        font-weight: 600;
-    }
+/* Row Styling */
+.high-risk-row {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+}
 
-    tr:nth-child(even) {
-        background: #f9f9f9;
-    }
+.low-risk-row {
+    background-color: #f0fdf4;
+    border-left: 4px solid #22c55e;
+}
 
-    tr:hover {
-        background: #eef3fb;
-    }
+/* Zebra Striping */
+.zebra-even.high-risk-row {
+    background-color: #fee2e2;
+}
 
-    /* Slider Container */
-    .slider-container {
-        display: flex;
-        align-items: center;
+.zebra-odd.high-risk-row {
+    background-color: #fef2f2;
+}
+
+.zebra-even.low-risk-row {
+    background-color: #dcfce7;
+}
+
+.zebra-odd.low-risk-row {
+    background-color: #f0fdf4;
+}
+
+/* Hover Effects */
+#results-table tbody tr:hover {
+    background-color: #f8fafc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+/* Probability Styling */
+.probability-high {
+    color: #dc2626;
+    font-weight: 700;
+    background-color: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.probability-low {
+    color: #16a34a;
+    font-weight: 700;
+    background-color: #dcfce7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Prediction Styling */
+.prediction-churn {
+    color: #dc2626;
+    font-weight: 600;
+    background-color: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.prediction-stay {
+    color: #16a34a;
+    font-weight: 600;
+    background-color: #dcfce7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .flex-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .controls-group {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .risk-labels {
+        flex-direction: column;
         gap: 10px;
-        color: black;
     }
-
-    .slider {
-        flex: 1;
-    }
-
-    .probability-value {
-        min-width: 50px;
+    
+    #total-count-display {
+        font-size: 16px;
         text-align: center;
-        font-weight: bold;
-        color: black;
     }
-
-    /* Progress Bar */
-    .progress-container {
-        width: 100%;
-        background-color: #e0e0e0;
-        border-radius: 5px;
-        height: 20px;
-        margin-top: 10px;
-    }
-
-    .progress-bar {
-        height: 100%;
-        border-radius: var(--border-radius);
-        background-color: var(--primary-color);
-        text-align: center;
-        color: white;
+    
+    #results-table {
         font-size: 12px;
-        line-height: 20px;
-        transition: width 0.4s ease;
     }
+    
+    #results-table th,
+    #results-table td {
+        padding: 8px 6px;
+    }
+}
 
-    /* Pagination */
-    .pagination {
-        margin-top: 20px;
-        display: flex;
-        align-items: center;
-    }
+/* Empty State Styling */
+#results-table tbody tr td[colspan="23"] {
+    background-color: #f9fafb;
+    border: 2px dashed #d1d5db;
+    text-align: center;
+    padding: 40px;
+    font-style: italic;
+    color: #6b7280;
+}
 
-    #page-info {
-        margin: 0 15px;
-        font-weight: 600;
-    }
+/* Loading Animation */
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Scrollbar Styling */
+#results-table::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#results-table::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+#results-table::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+#results-table::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
 </style>
 </head>
 <body>
