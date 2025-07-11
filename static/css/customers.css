@@ -1,0 +1,85 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    font-family: "Segoe UI", sans-serif;
+    background-color: rgb(0, 162, 255);
+    color:white;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #374151;
+    padding: 16px 24px;
+    box-shadow: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    height: 70px;
+}
+
+.table-container {
+    position: relative;
+    margin-top: 60px; /* 70px navbar + 10px gap */
+    height: calc(100vh - 60px);
+    overflow: auto;
+    padding: 16px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 1200px;
+    background: #ffffff;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background: #f1f5f9;
+    padding: 12px;
+    border-bottom: 2px solid #e5e7eb;
+    font-weight: 700;
+    font-size: 14px;
+    color: blue;
+    text-align: left;
+    z-index: 5;
+}
+
+tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    color: #374151;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+tbody tr:hover {
+    background-color: #e0f2fe;
+}
+
+/* Navbar link styles */
+.nav-link {
+    text-decoration: none;
+    color: #4a89dc;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #2563eb;
+}
+
+.logout-link {
+    color: #dc2626;
+}
+
+.logout-link:hover {
+    color: #b91c1c;
+}
