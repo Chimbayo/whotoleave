@@ -1,0 +1,36 @@
+<h2>Alerts Dashboard</h2>
+
+<div id="alerts-container">
+    Loading alerts...
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("/api/alerts/summary")
+        .then(res => res.json())
+        .then(alerts => {
+            const container = document.getElementById("alerts-container");
+            container.innerHTML = "";
+
+            if (alerts.length === 0) {
+                container.textContent = "No alerts.";
+                return;
+            }
+
+            alerts.forEach(alert => {
+                const div = document.createElement("div");
+                div.className = "alert-box";
+                div.innerHTML = `
+                    <h3>${alert.name}</h3>
+                    <p>${alert.description}</p>
+                    <a href="/alerts/details/${alert.code}" class="view-link">View Customers</a>
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById("alerts-container").textContent = "Error loading alerts.";
+        });
+});
+</script>

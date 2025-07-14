@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Churn Prediction Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/churn.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/churn.js') }}"></script>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <style>
+    /* Global Styles */
+    :root {
+        --primary-color: #4a89dc;
+        --secondary-color: #e9573f;
+        --text-color: #333333;
+        --bg-light: #f8f9fa;
+        --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        --border-radius: 8px;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 2px;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        grid-template-columns: 300px 1fr;
+        height: 100vh;
+        background: var(--bg-light);
+        color: var(--text-color);
+    }
+
+    /* Navigation */
+    nav {
+        grid-column: 1 / 4;
+        grid-row: 1;
+        background: white;
+        padding: 2px;
+        box-shadow: var(--box-shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e6e9ed;
+    }
+
+    nav .text-xl {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-left: 20px;
+        align-items: center;
+    }
+
+    nav .space-x-4 a {
+        margin-left: 1.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    nav .space-x-4 a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+
+    /* Header Panel */
+    .header {
+        grid-column: 1 / 4;
+        background: white;
+        display: flex;
+        gap: 20px;
+        border-bottom: 1px solid #e6e9ed;
+        box-shadow: var(--box-shadow);
+    }
+
+    .metric-box {
+        flex: 1;
+        background: var(--primary-color);
+        color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        text-align: center;
+    }
+
+    .metric-box h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: white;
+        font-weight: 400;
+    }
+
+    .metric-box p {
+        margin: 0;
+        font-size: 2rem;
+        color: white;
+    }
+
+    /* Right Panel (Table) */
+    .right-panel {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding: 0;
+    background: #f9f9f9;
+}
+
+/* Table Controls Styling */
+.table-controls {
+    margin-bottom: 20px;
+}
+
+.flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.controls-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.risk-labels {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.risk-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.risk-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.high-risk {
+    background-color: #ef4444;
+}
+
+.low-risk {
+    background-color: #22c55e;
+}
+
+#total-count-display {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+#export-btn {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+#export-btn:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+#export-btn:active {
+    transform: translateY(0);
+}
+
+/* Table Styling */
+#results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#results-table thead {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+#results-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #d1d5db;
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#results-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    color: #374151;
+}
+
+/* Row Styling */
+.high-risk-row {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+}
+
+.low-risk-row {
+    background-color: #f0fdf4;
+    border-left: 4px solid #22c55e;
+}
+
+/* Zebra Striping */
+.zebra-even.high-risk-row {
+    background-color: #fee2e2;
+}
+
+.zebra-odd.high-risk-row {
+    background-color: #fef2f2;
+}
+
+.zebra-even.low-risk-row {
+    background-color: #dcfce7;
+}
+
+.zebra-odd.low-risk-row {
+    background-color: #f0fdf4;
+}
+
+/* Hover Effects */
+#results-table tbody tr:hover {
+    background-color: #f8fafc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+/* Probability Styling */
+.probability-high {
+    color: #dc2626;
+    font-weight: 700;
+    background-color: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.probability-low {
+    color: #16a34a;
+    font-weight: 700;
+    background-color: #dcfce7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Prediction Styling */
+.prediction-churn {
+    color: #dc2626;
+    font-weight: 600;
+    background-color: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.prediction-stay {
+    color: #16a34a;
+    font-weight: 600;
+    background-color: #dcfce7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .flex-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .controls-group {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .risk-labels {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    #total-count-display {
+        font-size: 16px;
+        text-align: center;
+    }
+    
+    #results-table {
+        font-size: 12px;
+    }
+    
+    #results-table th,
+    #results-table td {
+        padding: 8px 6px;
+    }
+}
+
+/* Empty State Styling */
+#results-table tbody tr td[colspan="23"] {
+    background-color: #f9fafb;
+    border: 2px dashed #d1d5db;
+    text-align: center;
+    padding: 40px;
+    font-style: italic;
+    color: #6b7280;
+}
+
+/* Loading Animation */
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Scrollbar Styling */
+#results-table::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#results-table::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+#results-table::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+#results-table::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+/* ==============================
+   LEFT PANEL STYLES
+============================== */
+
+.left-panel {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 350px;
+    font-family: "Segoe UI", sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Metric boxes at top of panel */
+.left-panel .metric-box {
+    background: linear-gradient(135deg, #4a89dc, #6fb1fc);
+    color: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.left-panel .metric-box h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.left-panel .metric-box div {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Section titles */
+.left-panel h2 {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #333;
+    border-bottom: 2px solid #4a89dc;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Form styling */
+.left-panel .form-group {
+    margin-bottom: 15px;
+}
+
+.left-panel label {
+    display: block;
+    margin-bottom: 1px;
+    font-weight: 600;
+    color: #333;
+}
+
+.left-panel input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.left-panel .help-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Import button */
+.left-panel .import-button {
+    background: #4a89dc;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+}
+
+.left-panel .import-button:hover {
+    background: #366ecb;
+}
+
+/* Import status area */
+.left-panel .status-area {
+    margin-top: 15px;
+}
+
+.left-panel .progress-container {
+    width: 100%;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 8px;
+    margin-bottom: 10px;
+}
+
+.left-panel .progress-bar {
+    height: 8px;
+    width: 0%;
+    background: #4a89dc;
+    transition: width 0.3s ease;
+}
+
+.left-panel .status-message {
+    font-size: 14px;
+    color: #666;
+}
+
+
+
+</style>
+</head>
+<body>
+<nav class="bg-white shadow p-4 flex justify-between items-center">
+  <div class="flex items-center space-x-2">
+    <img src="/static/images/logo.png">
+    <span class="text-xl font-bold">BANK CUSTOMER CHURN PREDICTION SYSTEM</span>
+  </div>
+  <div class="space-x-4">
+    <a href="/about" class="text-blue-600 hover:underline">About the System</a>
+    <a href="/contacts" class="text-blue-700 hover:text-blue-600">Contacts</a>
+    <a href="/index" class="text-blue-600 hover:underline">Logout</a>
+  </div>
+</nav>
+
+<div class="header">
+        <a href="/customers" class="metric-link">
+            <div class="metric-box" style="background: linear-gradient(135deg, #4a89dc, #6fb1fc); color: #fff;">
+                <h3>Total Customers</h3>
+                <div id="total-customers" style="color: #fff">Loading...</div>
+            </div>
+        </a>
+        <div class="metric-box" style="padding: 0px;">
+            <h3>At-Risk Customers</h3>
+            <div id="predicted-churn">Loading...</div>
+        </div>
+        <div class="metric-box" style="background: linear-gradient(135deg, #4a89dc, #6fb1fc); color: #fff;">
+            <h3 style="margin: 0 0 10px;">Real-Time Monitoring Analytics</h3>
+            <p style="margin: 0;">
+                <a href="/churn_summary" style="color: #fff; text-decoration: underline;">
+                    View Analytics
+                </a>
+            </p>
+        </div>
+
+
+        <div class="metric-box">
+            <h3>Probability Filter</h3>
+            <div class="slider-container">
+                <span>0</span>
+                <input type="range" min="0" max="100" value="50" class="slider" id="probability-slider">
+                <span class="probability-value" id="probability-value">50%</span>
+            </div>
+        </div>
+</div>
+<div class="left-panel">
+    <div class="metric-box">
+            <h3>Churn-Risk(%)</h3>
+            <div id="churn_rate">Loading...</div>
+    </div>
+    <a href="/alerts" class="metric-link">
+    <div class="metric-box" style="background: linear-gradient(135deg, #f97316, #fb923c); color: #fff;">
+        <h3>Alerts!</h3>
+        <div id="alerts-count">Loading...</div>
+    </div>
+    </a>
+  <h2>Import Customer Data</h2>
+  <form id="customer-import-form">
+    <div class="form-group">
+      <label for="csv-import">Upload CSV File:</label>
+      <input type="file" id="csv-import" accept=".csv" required>
+      <p class="help-text"><small>Upload CSV file containing customer data to import into the database</small></p>
+    </div>
+
+    <button type="button" id="import-btn" class="import-button">Import Data</button>
+
+    <div id="import-status" class="status-area">
+      <div class="progress-container">
+        <div class="progress-bar"></div>
+      </div>
+      <div class="status-message">Ready to import</div>
+    </div>
+  </form>
+</div>    
+    <div class="right-panel">
+    <div class="table-controls">
+        <div class="flex-row">
+            <h2 id="total-count-display">Total customers with ≥ 50% probability of leaving: 0</h2>
+            <div class="controls-group">
+                <div class="risk-labels">
+                    <div class="risk-label">
+                        <span class="risk-indicator high-risk"></span>
+                        <span>High Risk (&gt;50%)</span>
+                    </div>
+                    <div class="risk-label">
+                        <span class="risk-indicator low-risk"></span>
+                        <span>Low Risk (&lt;50%)</span>
+                    </div>
+                </div>
+                <button id="export-btn">Export to CSV</button>
+            </div>
+        </div>
+    </div>
+    <table id="results-table" class="w-full border-collapse">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="p-3 text-left">Customer ID</th>
+                <th class="p-3 text-left">Age</th>
+                <th class="p-3 text-left">Gender</th>
+                <th class="p-3 text-left">District</th>
+                <th class="p-3 text-left">Region</th>
+                <th class="p-3 text-left">Location Type</th>
+                <th class="p-3 text-left">Customer Type</th>
+                <th class="p-3 text-left">Employment Status</th>
+                <th class="p-3 text-left">Income Level</th>
+                <th class="p-3 text-left">Education Level</th>
+                <th class="p-3 text-left">Tenure (years)</th>
+                <th class="p-3 text-left">Balance</th>
+                <th class="p-3 text-left">Credit Score</th>
+                <th class="p-3 text-left">Outstanding Loans</th>
+                <th class="p-3 text-left">Products Count</th>
+                <th class="p-3 text-left">Mobile Banking</th>
+                <th class="p-3 text-left">Transactions/Month</th>
+                <th class="p-3 text-left">Complaints</th>
+                <th class="p-3 text-left">Branch Distance (km)</th>
+                <th class="p-3 text-left">Network Quality</th>
+                <th class="p-3 text-left">Owns Mobile</th>
+                <th class="p-3 text-left">Prediction</th>
+                <th class="p-3 text-left">Probability</th>
+            </tr>
+        </thead>
+        <tbody id="results-body">
+            <!-- Data will be loaded dynamically via JavaScript -->
+        </tbody>
+    </table>
+</div>
+    <!-- Rest of your JavaScript remains unchanged -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const importButton = document.getElementById("import-btn");
+  const fileInput = document.getElementById("csv-import");
+  const progressBar = document.querySelector(".progress-bar");
+  const statusMessage = document.querySelector(".status-message");
+
+  importButton.addEventListener("click", () => {
+    const file = fileInput.files[0];
+    if (!file) {
+      alert("Please choose a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    statusMessage.textContent = "Uploading...";
+    progressBar.style.width = "30%";
+
+    fetch("/predict/batch", {
+      method: "POST",
+      body: formData
+    })
+    .then(response => {
+      progressBar.style.width = "60%";
+      if (!response.ok) {
+        throw new Error("Server returned an error.");
+      }
+      return response.json();
+    })
+    .then(data => {
+      progressBar.style.width = "100%";
+      if (data.error) {
+        statusMessage.textContent = `Error: ${data.error}`;
+      } else {
+        statusMessage.textContent = data.message;
+        fileInput.value = "";       }
+    })
+    .catch(error => {
+      progressBar.style.width = "100%";
+      statusMessage.textContent = `Upload failed: ${error.message}`;
+    });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    function loadChurnRate() {
+        fetch("/api/customers/churn_rate")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("churn_rate").textContent = data.churn_rate + "%";
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("churn_rate").textContent = "Error";
+            });
+    }
+
+    // load immediately
+    loadChurnRate();
+
+    // refresh every 10 seconds (optional)
+    setInterval(loadChurnRate, 10000);
+});
+</script>
+</body>

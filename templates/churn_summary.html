@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Churn Analytics Summary</title>
+    <script src="{{ url_for('static', filename='js/churn_summary.js') }}"></script>
+    <link rel="stylesheet" href="/static/css/churn_summary.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="nav flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div class="nav-left">
+            <img src="/static/images/logo.png" alt="Analytics Icon" class="h-8 w-8">
+            <span class="nav-title">Churn Analytics Dashboard</span>
+        </div>
+        <div class="nav-right">
+            <a href="/churn" class="nav-link">Home</a>
+            <a href="/about" class="nav-link">About</a>
+            <a href="/contacts" class="nav-link">Contacts</a>
+            <a href="/" class="nav-link text-red-600">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Churn Analytics Summary</h2>
+        <div id="churn-summary-charts">
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button id="download-all-pdf" class="download-btn flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Download All as PDF
+                </button>
+                <button id="download-all-csv" class="download-btn flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Download All as CSV
+                </button>
+            </div>
+            <div class="text-center py-8 text-gray-500">Loading analytics charts...</div>
+        </div>
+    </div>
+</body>
+</html>
